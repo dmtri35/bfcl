@@ -2060,6 +2060,18 @@ third_party_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=False,
     ),
+    "openai/gpt-oss-120b": ModelConfig(
+        model_name="openai/gpt-oss-120b",
+        display_name="OpenAI GPT 120B",
+        url="https://gorilla.cs.berkeley.edu/blogs/7_open_functions_v2.html",
+        org="Baseten",
+        license="Apache 2.0",
+        model_handler=OpenAICompletionsHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=True,
+    ),
 }
 
 
