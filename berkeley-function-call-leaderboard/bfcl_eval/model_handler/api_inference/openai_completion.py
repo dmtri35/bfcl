@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import requests
 from typing import Any
 
 from bfcl_eval.constants.type_mappings import GORILLA_TO_OPENAPI
@@ -22,7 +23,7 @@ class OpenAICompletionsHandler(BaseHandler):
     def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
         self.model_style = ModelStyle.OpenAI_Completions
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), base_url="http://localhost:8000/v1")
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), base_url=os.getenv("OPENAI_BASE_URL"))
 
     def decode_ast(self, result, language, has_tool_call_tag):
         if "FC" in self.model_name or self.is_fc_model:
@@ -54,18 +55,31 @@ class OpenAICompletionsHandler(BaseHandler):
     def _query_FC(self, inference_data: dict):
         message: list[dict] = inference_data["message"]
         tools = inference_data["tools"]
+        for tool in tools:
+            func = tool["function"]
+            if "response" in func.keys():
+                func.pop("response")
+            tool["function"] = func
         inference_data["inference_input_log"] = {"message": repr(message), "tools": tools}
 
         kwargs = {
             "messages": message,
             "model": self.model_name.replace("-FC", ""),
-            "temperature": self.temperature,
-            "store": False,
+            "temperature": 0,
+            # "extra_body": {
+            #     "provider": {
+            #         "order": ["Together"],  # specify provider(s) in order of preference
+            #         "allow_fallbacks": False  # optional: prevent fallbacks to other providers
+            #     }
+            # },
+            "stream_options": {
+                "include_usage": True
+            },
+            "max_tokens": 16834
         }
 
         if len(tools) > 0:
             kwargs["tools"] = tools
-
         return self.generate_with_backoff(**kwargs)
 
     def _pre_query_processing_FC(self, inference_data: dict, test_entry: dict) -> dict:
@@ -139,6 +153,8 @@ class OpenAICompletionsHandler(BaseHandler):
                 "content": execution_result,
                 "tool_call_id": tool_call_id,
             }
+            if tool_call_id == "":
+                print(execution_result)
             inference_data["message"].append(tool_message)
 
         return inference_data
@@ -197,7 +213,6 @@ class OpenAICompletionsHandler(BaseHandler):
             messages=inference_data["message"],
             model=self.model_name,
             temperature=self.temperature,
-            store=False,
         )
 
     def _pre_query_processing_prompting(self, test_entry: dict) -> dict:
