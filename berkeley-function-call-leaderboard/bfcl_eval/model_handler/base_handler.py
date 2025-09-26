@@ -248,7 +248,7 @@ class BaseHandler:
                     )
 
                     if is_empty_execute_response(decoded_model_responses):
-                        print("Empty response from the model. Proceed to next turn.")
+                        print(f"Empty response from the model, got {model_responses}, decoded to {decoded_model_responses}. Proceed to next turn.")
                         current_step_inference_log.append(
                             {
                                 "role": "handler_log",
@@ -259,7 +259,7 @@ class BaseHandler:
                         break
 
                 except Exception as e:
-                    print("Failed to decode the model response. Proceed to next turn.")
+                    print(f"Failed to decode the model response. Proceed to next turn.")
                     current_step_inference_log.append(
                         {
                             "role": "handler_log",

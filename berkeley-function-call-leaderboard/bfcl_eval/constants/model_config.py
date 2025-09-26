@@ -2174,6 +2174,18 @@ third_party_inference_model_map = {
         is_fc_model=True,
         underscore_to_dot=True,
     ),
+    "dsv3-agent-0611": ModelConfig(
+        model_name="dsv3-agent-0611",
+        display_name="dsv3-agent-0611",
+        url="https://gorilla.cs.berkeley.edu/blogs/7_open_functions_v2.html",
+        org="Baseten",
+        license="Apache 2.0",
+        model_handler=OpenAICompletionsHandler,
+        input_price=None,
+        output_price=None,
+        is_fc_model=True,
+        underscore_to_dot=True,
+    ),
 }
 
 
