@@ -21,8 +21,8 @@ from openai import OpenAI, RateLimitError
 class OpenAICompletionsHandler(BaseHandler):
     def __init__(self, model_name, temperature) -> None:
         super().__init__(model_name, temperature)
-        self.model_style = ModelStyle.OPENAI_COMPLETIONS
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.model_style = ModelStyle.OpenAI_Completions
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), base_url="http://localhost:8000/v1")
 
     def decode_ast(self, result, language, has_tool_call_tag):
         if "FC" in self.model_name or self.is_fc_model:
